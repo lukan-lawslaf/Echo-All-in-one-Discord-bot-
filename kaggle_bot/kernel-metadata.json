@@ -1,0 +1,16 @@
+{
+  "id": "n4kulf4l5w4l/ltx-video-bot",
+  "title": "LTX Video Bot",
+  "code_file": "main.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": "true",
+  "enable_gpu": "true",
+  "enable_internet": "true",
+  "dataset_sources": [
+    "n4kulf4l5w4l/ltx-video-weights",
+    "n4kulf4l5w4l/offline-ltx-libs"
+  ],
+  "competition_sources": [],
+  "kernel_sources": []
+}
