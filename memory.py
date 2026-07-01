@@ -5,6 +5,15 @@ Embeddings are generated via HuggingFace Inference API so no local model
 or PyTorch is needed. Works with any chromadb version.
 """
 
+# ── SQLite patch (Azure App Service ships with SQLite < 3.35; ChromaDB needs >= 3.35)
+# pysqlite3-binary bundles a newer SQLite and is installed via requirements.txt.
+try:
+    __import__("pysqlite3")
+    import sys as _sys
+    _sys.modules["sqlite3"] = _sys.modules.pop("pysqlite3")
+except ImportError:
+    pass  # local dev — system sqlite3 is probably fine
+
 import logging
 import os
 

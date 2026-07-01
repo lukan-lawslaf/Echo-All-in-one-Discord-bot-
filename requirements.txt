@@ -6,8 +6,8 @@ aiohttp>=3.9.0
 flask>=3.0.0
 
 # Vector memory
-# DefaultEmbeddingFunction uses ONNX runtime (~30 MB) — no PyTorch needed
 chromadb>=0.5.0
+pysqlite3-binary  # supplies SQLite >= 3.35 required by chromadb on Azure App Service
 
 # Video montage
 moviepy>=1.0.3
