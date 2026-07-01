@@ -1,0 +1,12 @@
+.env
+__pycache__/
+*.pyc
+.vscode/
+.idea/
+
+# ChromaDB persistent store
+echo_memory/
+
+# Temp video files
+echo_video_*/
+*.mp4
