@@ -11,7 +11,7 @@ import os
 from typing import Optional
 
 import chromadb
-from chromadb.utils import embedding_functions
+from chromadb.utils.embedding_functions import DefaultEmbeddingFunction
 
 log = logging.getLogger(__name__)
 
@@ -23,14 +23,13 @@ CHROMA_PATH = os.path.join(os.path.dirname(__file__), "echo_memory")
 # How many past memories to surface per response.
 TOP_K = 5
 
-# Sentence-transformers model used for embeddings.
-# "all-MiniLM-L6-v2" is fast, small (~80MB), and accurate enough for this use case.
-EMBED_MODEL = "all-MiniLM-L6-v2"
+# DefaultEmbeddingFunction uses all-MiniLM-L6-v2 via ONNX runtime (~30 MB).
+# This avoids the PyTorch dependency that sentence-transformers would require.
 
 # ── Client singleton ──────────────────────────────────────────────────────────
 
 _client: Optional[chromadb.PersistentClient] = None
-_embed_fn: Optional[embedding_functions.SentenceTransformerEmbeddingFunction] = None
+_embed_fn: Optional[DefaultEmbeddingFunction] = None
 
 
 def _get_client() -> chromadb.PersistentClient:
@@ -41,13 +40,11 @@ def _get_client() -> chromadb.PersistentClient:
     return _client
 
 
-def _get_embed_fn() -> embedding_functions.SentenceTransformerEmbeddingFunction:
+def _get_embed_fn() -> DefaultEmbeddingFunction:
     global _embed_fn
     if _embed_fn is None:
-        _embed_fn = embedding_functions.SentenceTransformerEmbeddingFunction(
-            model_name=EMBED_MODEL
-        )
-        log.info("Embedding function loaded: %s", EMBED_MODEL)
+        _embed_fn = DefaultEmbeddingFunction()
+        log.info("Embedding function loaded (ONNX all-MiniLM-L6-v2)")
     return _embed_fn
 
 
