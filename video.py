@@ -111,36 +111,52 @@ def _download(url: str, dest: str) -> bool:
 
 # ── MoviePy helpers ───────────────────────────────────────────────────────────
 
-def _build_montage(clip_paths: list[str], output_path: str) -> bool:
+def _build_montage(clip_paths: list, output_path: str) -> bool:
     """
-    Trim, resize, concatenate with crossfade. Returns True on success.
-    Lazily imports MoviePy so the module loads even if moviepy isn't installed yet.
+    Trim, resize, concatenate. Returns True on success.
+    Supports both MoviePy 1.x and 2.x via a compatibility shim.
     """
+    # ── Compatibility imports ──
+    VideoFileClip = None
+    concatenate_videoclips = None
+    moviepy_v2 = False
+
     try:
-        from moviepy.video.io.VideoFileClip import VideoFileClip
-        from moviepy.video.compositing.concatenate import concatenate_videoclips
-        from moviepy.video.fx.resize import resize
+        # MoviePy 2.x uses flat imports
+        from moviepy import VideoFileClip, concatenate_videoclips
+        moviepy_v2 = True
     except ImportError:
-        log.error("moviepy is not installed — cannot build montage")
-        return False
+        try:
+            # MoviePy 1.x uses the editor submodule
+            from moviepy.editor import VideoFileClip, concatenate_videoclips
+        except ImportError:
+            log.error("moviepy is not installed — cannot build montage")
+            return False
+
+    def _resize(clip, height):
+        try:
+            return clip.resized(height=height) if moviepy_v2 else clip.resize(height=height)
+        except Exception:
+            return clip
+
+    def _crop(clip, width):
+        if clip.w <= width:
+            return clip
+        x1 = (clip.w - width) / 2
+        try:
+            return clip.crop(x1=x1, x2=x1 + width)
+        except Exception:
+            return clip
 
     clips = []
     try:
         for path in clip_paths:
             try:
-                c = VideoFileClip(path, audio=False)
-                # Trim to CLIP_DURATION (or the full clip if shorter)
+                c = VideoFileClip(str(path), audio=False)
                 end = min(CLIP_DURATION, c.duration)
-                c = c.subclip(0, end)
-                # Resize to target resolution maintaining aspect ratio via crop
-                c = resize(c, height=OUTPUT_HEIGHT)
-                # Centre-crop to OUTPUT_WIDTH
-                if c.w > OUTPUT_WIDTH:
-                    x_centre = c.w / 2
-                    c = c.crop(
-                        x1=x_centre - OUTPUT_WIDTH / 2,
-                        x2=x_centre + OUTPUT_WIDTH / 2,
-                    )
+                c = c.subclipped(0, end) if moviepy_v2 else c.subclip(0, end)
+                c = _resize(c, OUTPUT_HEIGHT)
+                c = _crop(c, OUTPUT_WIDTH)
                 clips.append(c)
             except Exception as e:
                 log.warning("Skipping clip %s: %s", path, e)
@@ -151,14 +167,13 @@ def _build_montage(clip_paths: list[str], output_path: str) -> bool:
         if len(clips) == 1:
             final = clips[0]
         else:
-            # crossfadeout on each clip except the last
-            xf_clips = []
-            for i, c in enumerate(clips):
-                if i < len(clips) - 1:
-                    xf_clips.append(c.crossfadeout(CROSSFADE))
-                else:
-                    xf_clips.append(c)
-            final = concatenate_videoclips(xf_clips, padding=-CROSSFADE, method="compose")
+            if moviepy_v2:
+                final = concatenate_videoclips(clips)
+            else:
+                xf_clips = []
+                for i, c in enumerate(clips):
+                    xf_clips.append(c.crossfadeout(CROSSFADE) if i < len(clips) - 1 else c)
+                final = concatenate_videoclips(xf_clips, padding=-CROSSFADE, method="compose")
 
         final.write_videofile(
             output_path,
