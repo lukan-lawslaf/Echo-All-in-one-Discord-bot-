@@ -15,6 +15,7 @@ from huggingface_hub import InferenceClient
 
 from memory import add_memory, get_relevant_memories, delete_user_memories, get_memory_count
 from video import create_pexels_video
+from keep_alive import keep_alive
 
 # ── Logging ───────────────────────────────────────────────────────────────────
 
@@ -260,4 +261,5 @@ async def forget_me(interaction: discord.Interaction):
 
 # ── Run ───────────────────────────────────────────────────────────────────────
 
+keep_alive()
 bot.run(DISCORD_TOKEN)

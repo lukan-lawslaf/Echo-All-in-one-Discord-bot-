@@ -3,6 +3,7 @@ python-dotenv>=1.0.0
 huggingface-hub>=0.25.0
 requests>=2.31.0
 aiohttp>=3.9.0
+flask>=3.0.0
 
 # Vector memory
 # DefaultEmbeddingFunction uses ONNX runtime (~30 MB) — no PyTorch needed
