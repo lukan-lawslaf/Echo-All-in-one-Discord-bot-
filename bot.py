@@ -85,7 +85,7 @@ def build_prompt(user_id: str, username: str, user_message: str) -> str:
 
 intents = discord.Intents.default()
 intents.message_content = True
-bot = commands.Bot(command_prefix=None, intents=intents)
+bot = commands.Bot(command_prefix=commands.when_mentioned, intents=intents)
 
 
 @bot.event
@@ -201,6 +201,14 @@ async def animate(interaction: discord.Interaction, prompt: str):
             return
 
         size_mb = os.path.getsize(output_path) / (1024 * 1024)
+
+        if size_mb > 8:
+            await interaction.followup.send(
+                f"😔 The montage came out **{size_mb:.1f} MB** — too large for Discord (8 MB limit).\n"
+                "Try a simpler prompt with fewer visual elements."
+            )
+            return
+
         embed = discord.Embed(
             title="🎬 Montage Ready!",
             description=f"**Prompt:** {prompt}\n*Sourced from Pexels stock library 🎥*",

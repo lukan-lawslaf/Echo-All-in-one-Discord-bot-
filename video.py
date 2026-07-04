@@ -31,20 +31,20 @@ log = logging.getLogger(__name__)
 PEXELS_BASE = "https://api.pexels.com/videos"
 
 # Max clips to download and stitch together.
-MAX_CLIPS = 4
+MAX_CLIPS = 3
 
 # Each clip is trimmed to this many seconds before stitching.
-CLIP_DURATION = 4  # seconds
+CLIP_DURATION = 3  # seconds
 
 # Crossfade duration between clips (seconds).
 CROSSFADE = 0.5
 
-# Target output resolution — 720p is a good balance of quality vs file size.
-OUTPUT_WIDTH = 1280
-OUTPUT_HEIGHT = 720
+# Target output resolution — 360p keeps file size well under 8 MB.
+OUTPUT_WIDTH = 640
+OUTPUT_HEIGHT = 360
 
-# Discord file size limit in bytes (25 MB for regular, 8 MB for non-boosted).
-DISCORD_LIMIT_MB = 24
+# Stay safely under Discord's 8 MB non-boosted limit.
+DISCORD_LIMIT_MB = 7.5
 
 
 # ── Pexels helpers ────────────────────────────────────────────────────────────
@@ -181,6 +181,7 @@ def _build_montage(clip_paths: list, output_path: str) -> bool:
             audio=False,
             fps=24,
             preset="fast",
+            ffmpeg_params=["-crf", "28", "-movflags", "faststart"],
             logger=None,  # suppress MoviePy's verbose output
         )
         return True
