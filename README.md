@@ -1,124 +1,94 @@
-# Echo — All-in-One Discord Bot
+<div align="center">
 
-![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python)
-![discord.py](https://img.shields.io/badge/discord.py-2.x-5865F2?logo=discord)
-![Azure](https://img.shields.io/badge/Deployed-Azure%20App%20Service-0078D4?logo=microsoftazure)
-![ChromaDB](https://img.shields.io/badge/Memory-ChromaDB-orange)
-![License](https://img.shields.io/badge/License-MIT-green)
+```
 
-> A personality-rich Discord bot with persistent vector memory, AI chat, image generation, and video montage creation.
+██████╗ ██████╗ ██████╗ ███████╗███████╗███████╗
+██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝
+██████╔╝██████╔╝██████╔╝█████╗  ███████╗███████╗
+██╔═══╝ ██╔═══╝ ██╔══██╗██╔══╝  ╚════██║╚════██║
+██║     ██║     ██║  ██║███████╗███████║███████║
+╚═╝     ╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝
+```
+
+
+# Echo-All-in-one-Discord-bot-
+
+
+A Discord bot which can talk, generate images and even vedios and more
+
+
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white) ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white) ![Discord](https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white) ![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white)
+
+
+</div>
 
 ---
 
-## Features
 
-| Feature | Description |
-|---|---|
-| **AI Chat** | Mention Echo (@Echo) to have a conversation powered by DeepSeek V3 via HuggingFace |
-| **Persistent Memory** | Remembers past conversations per user using ChromaDB vector search |
-| **`/draw`** | Generates AI images from a text prompt via Pollinations.ai |
-| **`/animate`** | Searches Pexels for stock footage and stitches a short video montage |
-| **`/memory_status`** | Shows how many memories Echo has stored about you |
-| **`/forget_me`** | Wipes all of Echo's memories about you |
+## 📖 About
+
+A Discord bot which can talk, generate images and even vedios and more
 
 ---
 
-## Setup
+## ✨ Features
 
-### 1. Clone the repo
+- ✅ Clean and maintainable codebase
+- ✅ Well-documented with examples
+- ✅ Easy to extend and customize
+
+---
+
+## 🛠️ Tech Stack
+
+**Languages**: `Python`
+
+**Frameworks**: `Flask` `Bot Framework`
+
+**Tools**: `pip/poetry`
+
+**Platforms**: `Discord`
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Python 3.8+
+
+### Installation
 
 ```bash
-git clone https://github.com/lukan-lawslaf/Echo-All-in-one-Discord-bot-.git
-cd Echo-All-in-one-Discord-bot-
-```
-
-### 2. Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 3. Create a `.env` file
-
-```env
-Discord_Token=your_discord_bot_token
-HF_TOKEN=your_huggingface_token
-PEXELS_API=your_pexels_api_key
-```
-
-### 4. Enable Privileged Intents
-
-In the [Discord Developer Portal](https://discord.com/developers/applications):
-
-- Go to your bot → **Bot** tab
-- Enable **Message Content Intent**
-
-### 5. Run the bot
-
-```bash
-python bot.py
+# Add installation instructions here
 ```
 
 ---
 
-## Commands
+## 🤝 Contributing
 
-| Command | Usage | Description |
-|---|---|---|
-| `@Echo <message>` | Mention the bot | Chat with Echo — she remembers you |
-| `/draw` | `/draw prompt: a cat on the moon` | AI image generation |
-| `/animate` | `/animate prompt: ocean waves at sunset` | Pexels video montage |
-| `/memory_status` | `/memory_status` | See your stored memory count |
-| `/forget_me` | `/forget_me` | Delete all memories Echo has of you |
+Contributions are welcome! Please feel free to submit a Pull Request.
 
----
-
-## How Memory Works
-
-1. Every time you chat with Echo via @mention, the exchange is embedded and stored in a per-user [ChromaDB](https://www.trychroma.com/) collection.
-2. On your next message, the **top 5 most relevant** past exchanges are retrieved via cosine similarity and injected into the AI prompt — giving Echo context about who you are.
-3. Embeddings are generated via the HuggingFace Inference API (`all-MiniLM-L6-v2`), so no local model or GPU is needed.
-4. Use `/forget_me` to wipe your memories and start fresh.
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ---
-
-## How /animate Works
-
-1. Searches [Pexels Videos API](https://www.pexels.com/api/) for clips matching your prompt.
-2. Downloads up to 3 short clips.
-3. Trims each to 3 seconds, resizes to 360p, and concatenates them with [MoviePy](https://zulko.github.io/moviepy/).
-4. Sends the final `.mp4` (typically 2–4 MB) directly in Discord.
-
----
-
-## Project Structure
-
-```
-Echo/
-├── bot.py           # Main bot — commands, events, AI chat
-├── memory.py        # ChromaDB vector memory layer
-├── video.py         # Pexels video search + MoviePy montage builder
-├── keep_alive.py    # Flask health-check server (required for Azure)
-├── chat.txt         # Echo's persona / system prompt
-├── requirements.txt
-└── .env             # Secrets (not committed)
-```
-
----
-
-## Tech Stack
-
-- **[discord.py 2.x](https://discordpy.readthedocs.io/)** — Bot framework
-- **[DeepSeek V3](https://huggingface.co/deepseek-ai/DeepSeek-V3-0324)** via HuggingFace Inference API — AI chat
-- **[ChromaDB](https://www.trychroma.com/)** — Persistent vector memory
-- **[Pollinations.ai](https://pollinations.ai/)** — Free AI image generation
-- **[Pexels API](https://www.pexels.com/api/)** — Royalty-free stock video search
-- **[MoviePy](https://zulko.github.io/moviepy/)** — Video editing and montage
-- **[Flask](https://flask.palletsprojects.com/)** — Keep-alive HTTP server for Azure
-- **[Azure App Service B1](https://azure.microsoft.com/en-us/products/app-service/)** — Deployment
-
----
-
-## License
 
 MIT — do whatever you want, just don't be evil.
+
+---
+
+
+
+
+---
+<div align="center">
+
+**Made with ❤️ by [lukan-lawslaf](https://github.com/lukan-lawslaf)**
+
+⭐ Star this repo if you found it helpful!
+
+</div>
